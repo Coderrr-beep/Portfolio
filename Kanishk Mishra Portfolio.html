@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kanishk Mishra Portfolio</title>
+<meta name="description" content="Kanishk Mishra, software engineer building backends, mobile apps, cloud infrastructure and LLM agent systems.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a dark "control room" for a backend + AI engineer. One orchestrated moment:
+   the hero agent-graph canvas and a live terminal booting. Everything below is calm, monospaced labels as wayfinding. */
+:root {
+  --bg: #0a1020;
+  --panel: #111a30;
+  --line: #22304f;
+  --ink: #e8ecf5;
+  --muted: #95a1bb;
+  --accent: #fca311;
+  --accent-2: #5fb3ff;
+  --display: "Syne", "Arial Black", sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+.mono { font-family: var(--mono); }
+
+/* Nav */
+nav { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(12px); background: color-mix(in srgb, var(--bg) 78%, transparent); border-bottom: 1px solid var(--line); }
+nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 62px; gap: 16px; }
+.logo { font-family: var(--mono); font-weight: 700; font-size: 15px; text-decoration: none; letter-spacing: 0.5px; }
+.logo span { color: var(--accent); }
+.links { display: flex; gap: 22px; font-family: var(--mono); font-size: 13px; }
+.links a { text-decoration: none; color: var(--muted); transition: color .2s; }
+.links a:hover { color: var(--accent); }
+@media (max-width: 720px) { .links { display: none; } }
+
+/* Hero */
+.hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); }
+#graph { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .75; }
+.hero::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 20% 40%, transparent 0%, var(--bg) 78%); pointer-events: none; }
+.hero .wrap { position: relative; z-index: 2; display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: center; padding-top: 88px; padding-bottom: 88px; }
+@media (max-width: 900px) { .hero .wrap { grid-template-columns: 1fr; padding-top: 56px; padding-bottom: 56px; } }
+.status { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12.5px; color: var(--muted); border: 1px solid var(--line); background: var(--panel); padding: 6px 12px; border-radius: 999px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #3ddc97; box-shadow: 0 0 0 0 #3ddc9799; animation: ping 2s infinite; }
+@keyframes ping { 70% { box-shadow: 0 0 0 9px #3ddc9700; } 100% { box-shadow: 0 0 0 0 #3ddc9700; } }
+.hero h1 { font-size: clamp(52px, 8.4vw, 104px); line-height: .92; letter-spacing: -2px; margin: 22px 0 18px; font-weight: 800; }
+.hero h1 .ln { display: block; }
+.hero h1 .ln:nth-child(2) { color: transparent; -webkit-text-stroke: 1.5px var(--accent); }
+.role { font-family: var(--mono); font-size: 15px; color: var(--accent-2); margin-bottom: 16px; min-height: 1.6em; }
+.role .cursor { display: inline-block; width: 9px; height: 1.05em; background: var(--accent-2); vertical-align: -3px; margin-left: 2px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.lede { color: var(--muted); max-width: 52ch; font-size: 18px; margin: 0 0 28px; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { font-family: var(--mono); font-size: 14px; font-weight: 500; text-decoration: none; padding: 12px 18px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; transition: transform .2s, border-color .2s, background .2s; display: inline-flex; align-items: center; gap: 8px; }
+.btn:hover { transform: translateY(-2px); border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: #111; border-color: var(--accent); font-weight: 700; }
+.btn.primary:hover { background: #ffb53a; }
+
+/* Terminal */
+.term { background: #070c18; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 30px 80px -20px #000a, 0 0 0 1px #ffffff05 inset; overflow: hidden; }
+.term-bar { display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-bottom: 1px solid var(--line); background: var(--panel); }
+.term-bar i { width: 11px; height: 11px; border-radius: 50%; background: #2b3858; }
+.term-bar i:nth-child(1) { background: #ff5f57; } .term-bar i:nth-child(2) { background: #febc2e; } .term-bar i:nth-child(3) { background: #28c840; }
+.term-bar span { margin-left: 10px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+#term { font-family: var(--mono); font-size: 13px; line-height: 1.75; padding: 16px 18px 20px; min-height: 330px; white-space: pre-wrap; color: #c9d3e8; margin: 0; }
+#term .p { color: var(--accent); } #term .ok { color: #3ddc97; } #term .dim { color: #6b7896; } #term .b { color: var(--accent-2); }
+
+/* Sections */
+section { padding: 96px 0; border-bottom: 1px solid var(--line); }
+.label { font-family: var(--mono); font-size: 13px; color: var(--accent); letter-spacing: 1px; margin-bottom: 14px; display: block; }
+h2 { font-size: clamp(34px, 5vw, 54px); line-height: 1.02; letter-spacing: -1px; margin-bottom: 40px; }
+h2 em { font-style: normal; color: var(--accent); }
+
+/* About + stats */
+.about { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+@media (max-width: 900px) { .about { grid-template-columns: 1fr; gap: 36px; } }
+.about p { margin: 0 0 16px; color: #c7cfe0; max-width: 60ch; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.stat { background: var(--panel); padding: 26px 22px; }
+.stat b { display: block; font-family: var(--display); font-size: 46px; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
+.stat b sup { font-size: 24px; color: var(--accent); }
+.stat span { display: block; margin-top: 10px; font-size: 14px; color: var(--muted); }
+
+/* Experience */
+.timeline { position: relative; display: grid; gap: 22px; }
+.timeline::before { content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(var(--accent), var(--accent-2) 60%, var(--line)); }
+.job { position: relative; padding-left: 44px; }
+.job::before { content: ""; position: absolute; left: 0; top: 30px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); border: 2px solid var(--accent); }
+.job.now::before { background: var(--accent); box-shadow: 0 0 0 6px #fca31122; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 26px 28px; transition: border-color .25s, transform .25s; }
+.card:hover { border-color: #3a4c76; transform: translateY(-2px); }
+.job-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; align-items: baseline; }
+.job h3 { font-size: 22px; letter-spacing: -.3px; }
+.when { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.org { font-family: var(--mono); font-size: 14px; color: var(--accent); margin: 4px 0 14px; }
+.job ul { margin: 0 0 16px; padding-left: 18px; color: #c7cfe0; }
+.job li { margin-bottom: 7px; }
+.job li::marker { color: var(--accent); }
+.tags { display: flex; flex-wrap: wrap; gap: 7px; }
+.tag { font-family: var(--mono); font-size: 12px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--line); color: #b6c2db; background: #0d1528; }
+
+/* Projects */
+.projects { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+@media (max-width: 960px) { .projects { grid-template-columns: 1fr; } }
+.proj { display: flex; flex-direction: column; position: relative; overflow: hidden; }
+.proj::before { content: ""; position: absolute; inset: 0; background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 0%), #fca3111c, transparent 45%); opacity: 0; transition: opacity .3s; pointer-events: none; }
+.proj:hover::before { opacity: 1; }
+.proj .kind { font-family: var(--mono); font-size: 12px; color: var(--accent-2); margin-bottom: 12px; }
+.proj h3 { font-size: 24px; margin-bottom: 10px; }
+.proj p { color: #c7cfe0; margin: 0 0 18px; font-size: 16px; flex: 1; }
+.metric { font-family: var(--mono); font-size: 13px; color: var(--ink); border-top: 1px dashed var(--line); padding-top: 14px; margin-bottom: 16px; }
+.metric b { color: var(--accent); }
+.pipeline { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-family: var(--mono); font-size: 11.5px; margin-bottom: 16px; color: var(--muted); }
+.pipeline span { border: 1px solid #3a4c76; border-radius: 5px; padding: 3px 7px; color: var(--ink); }
+
+/* Skills */
+.skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+@media (max-width: 900px) { .skills { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .skills { grid-template-columns: 1fr; } }
+.skills h3 { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--accent); margin-bottom: 14px; letter-spacing: .5px; }
+.skills .tag { font-size: 13px; transition: border-color .2s, color .2s; }
+.skills .tag:hover { border-color: var(--accent); color: var(--ink); }
+
+/* Achievements */
+.ach { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+@media (max-width: 900px) { .ach { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 520px) { .ach { grid-template-columns: 1fr; } }
+.ach div { background: var(--panel); padding: 24px; }
+.ach b { display: block; font-family: var(--display); font-size: 20px; margin-bottom: 6px; }
+.ach span { font-size: 15px; color: var(--muted); }
+
+/* Contact */
+.contact { text-align: left; }
+.contact h2 { font-size: clamp(40px, 7vw, 86px); margin-bottom: 24px; }
+.contact-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.contact-list { margin-top: 32px; display: grid; gap: 10px; font-family: var(--mono); font-size: 15px; color: var(--muted); }
+.contact-list a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
+.contact-list a:hover { border-color: var(--accent); }
+#copied { font-family: var(--mono); font-size: 13px; color: #3ddc97; min-width: 80px; }
+footer { padding: 28px 0 40px; font-family: var(--mono); font-size: 12.5px; color: #6b7896; }
+footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+
+/* Load sequence: elements start visible and only slide slightly */
+.rise { animation: rise .8s cubic-bezier(.2,.7,.2,1) both; }
+.d1 { animation-delay: .05s; } .d2 { animation-delay: .15s; } .d3 { animation-delay: .25s; } .d4 { animation-delay: .35s; } .d5 { animation-delay: .45s; }
+@keyframes rise { from { transform: translateY(14px); opacity: .25; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+
+<nav aria-label="Main">
+  <div class="wrap">
+    <a class="logo" href="#top">kanishk<span>.</span>dev</a>
+    <div class="links">
+      <a href="#about">about</a><a href="#work">experience</a><a href="#projects">projects</a><a href="#stack">skills</a><a href="#contact">contact</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <canvas id="graph" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div>
+      <span class="status rise d1"><span class="dot"></span>Software Engineering Intern at Seva AI</span>
+      <h1 class="rise d2"><span class="ln">Kanishk</span><span class="ln">Mishra</span></h1>
+      <div class="role rise d3" aria-live="polite"><span id="role">Backend engineer</span><span class="cursor"></span></div>
+      <p class="lede rise d4">I build production APIs, mobile apps, cloud infrastructure and LLM agent pipelines. Electrical Engineering student at the University of Delhi with a minor in AI and ML.</p>
+      <div class="cta rise d5">
+        <a class="btn primary" href="#projects">View my work</a>
+        <a class="btn" href="https://github.com/Coderrr-beep" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn" href="https://www.linkedin.com/in/kanishk-mishra-7008b1371" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+    <div class="term rise d4" aria-label="Animated terminal showing recent work">
+      <div class="term-bar"><i></i><i></i><i></i><span>~/kanishk &mdash; zsh</span></div>
+      <pre id="term"></pre>
+    </div>
+  </div>
+</header>
+
+<main>
+<section id="about">
+  <div class="wrap about">
+    <div>
+      <span class="label">01 / about</span>
+      <h2>Reliable software for people who <em>depend on it.</em></h2>
+      <p>I am a third-year B.Tech Electrical Engineering student at the Faculty of Technology, University of Delhi, minoring in Artificial Intelligence and Machine Learning.</p>
+      <p>Across three internships I have shipped a health-tech backend, built a multiagent security scanner at DRDO, and digitized procurement for a sustainability startup. I care about the boring parts that make software trustworthy: tests, clear API contracts, safe rollouts and honest metrics.</p>
+    </div>
+    <div class="stats" aria-label="Highlights">
+      <div class="stat"><b data-count="580">580<sup>+</sup></b><span>automated tests written at Seva AI</span></div>
+      <div class="stat"><b data-count="59">59<sup>%</sup></b><span>fewer false positives in the DRDO scanner</span></div>
+      <div class="stat"><b data-count="55">55<sup>%</sup></b><span>lower LLM hallucination rate after prompt tuning</span></div>
+      <div class="stat"><b data-count="3">3</b><span>internships: health tech, defense research, sustainability</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <span class="label">02 / experience</span>
+    <h2>Where I have <em>shipped.</em></h2>
+    <div class="timeline">
+      <article class="job now">
+        <div class="card">
+          <div class="job-top"><h3>Software Engineering Intern</h3><span class="when">Oct 2026 &ndash; Present</span></div>
+          <div class="org">Seva AI &middot; New Delhi</div>
+          <ul>
+            <li>Building the NestJS backend and React Native (Expo) app for a medication platform that helps families care for elderly parents, ahead of a 5-family pilot.</li>
+            <li>Automated medication reminders with time-zone-aware scheduling, quiet hours, missed-dose escalation within 60 minutes and push/SMS alerts in English and Hindi.</li>
+            <li>Led team-wide API conventions (versioning, retry-safe writes, rate limiting, PII-redacted logging) and server-side feature flags with a kill switch for every AI feature.</li>
+            <li>Architected PostgreSQL with Prisma migrations, Supabase Auth with row-level security, and Terraform-managed Google Cloud Run across 3 environments.</li>
+            <li>Delivered GitHub Actions CI/CD running 580+ automated tests and authored 10+ architecture decision records.</li>
+          </ul>
+          <div class="tags"><span class="tag">TypeScript</span><span class="tag">NestJS</span><span class="tag">React Native</span><span class="tag">PostgreSQL</span><span class="tag">Prisma</span><span class="tag">Supabase</span><span class="tag">GCP</span><span class="tag">Terraform</span><span class="tag">Docker</span></div>
+        </div>
+      </article>
+      <article class="job">
+        <div class="card">
+          <div class="job-top"><h3>AI &amp; Software Engineering Intern</h3><span class="when">Jun 2026 &ndash; Jul 2026</span></div>
+          <div class="org">DRDO &middot; Scientific Analysis Group (SAG), Delhi</div>
+          <ul>
+            <li>Designed a multiagent vulnerability scanner in LangGraph that pairs Semgrep and Bandit with a locally hosted Qwen2.5-Coder LLM to produce CWE-mapped reports.</li>
+            <li>Reduced false positives by 59% (0.374 to 0.152) against an LLM-only baseline on 121 SecurityEval benchmark samples.</li>
+            <li>Cut hallucinations by 55% (37.5% to 16.7%) through prompt refinement with fully consistent output across repeated scans.</li>
+          </ul>
+          <div class="tags"><span class="tag">Python</span><span class="tag">LangGraph</span><span class="tag">FastAPI</span><span class="tag">Ollama</span><span class="tag">Semgrep</span><span class="tag">Bandit</span><span class="tag">Streamlit</span></div>
+        </div>
+      </article>
+      <article class="job">
+        <div class="card">
+          <div class="job-top"><h3>Tech Intern, Web and App Development</h3><span class="when">Sep 2025 &ndash; Jan 2026</span></div>
+          <div class="org">CircularCircuits (formerly Brown2Green Solutions)</div>
+          <ul>
+            <li>Launched a procurement platform adopted by 3 operations teams and about 18 daily users, digitizing &#8377;1,00,000 in daily purchases.</li>
+            <li>Streamlined CRM, warehouse and payment workflows with relational schemas, role-based access control and automated pricing.</li>
+          </ul>
+          <div class="tags"><span class="tag">Node.js</span><span class="tag">React.js</span><span class="tag">AppSheet</span><span class="tag">Google Sheets</span><span class="tag">Figma</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <span class="label">03 / projects</span>
+    <h2>Things I have <em>built.</em></h2>
+    <div class="projects">
+      <article class="card proj">
+        <div class="kind">AI &middot; Security</div>
+        <h3>Hybrid AI Vulnerability Scanner</h3>
+        <div class="pipeline" aria-label="Agent pipeline"><span>Router</span>&rarr;<span>Scanner</span>&rarr;<span>Analyzer</span>&rarr;<span>Synthesizer</span></div>
+        <p>A LangGraph multiagent system that combines static analysis tools with a local code LLM, producing explainable vulnerability reports with CWE mapping, confidence scores and fixes.</p>
+        <div class="metric">False-positive rate <b>0.374 &rarr; 0.152</b></div>
+        <div class="tags"><span class="tag">LangGraph</span><span class="tag">Qwen2.5-Coder</span><span class="tag">Semgrep</span><span class="tag">FastAPI</span></div>
+      </article>
+      <article class="card proj">
+        <div class="kind">Fintech &middot; Product</div>
+        <h3>Salary Sync</h3>
+        <p>An earned wage access platform that lets employees withdraw salary they have already earned before payday, without high-interest loans. Designed as B2B SaaS for startups.</p>
+        <div class="metric">Placed <b>4th of 150 teams</b> in a business pitch competition</div>
+        <div class="tags"><span class="tag">Product design</span><span class="tag">B2B SaaS</span><span class="tag">Fintech</span></div>
+      </article>
+      <article class="card proj">
+        <div class="kind">Machine Learning &middot; Safety</div>
+        <h3>FlowGuard</h3>
+        <p>A machine learning predictor that estimates stampede risk at public events from crowd density, event type and exit availability, built for event safety monitoring.</p>
+        <div class="metric">Inputs: <b>density &middot; event type &middot; exits</b></div>
+        <div class="tags"><span class="tag">Python</span><span class="tag">Machine Learning</span><span class="tag">Risk modeling</span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="stack">
+  <div class="wrap">
+    <span class="label">04 / skills</span>
+    <h2>My <em>toolkit.</em></h2>
+    <div class="skills">
+      <div class="card"><h3>// languages</h3><div class="tags"><span class="tag">TypeScript</span><span class="tag">JavaScript</span><span class="tag">Python</span><span class="tag">C++</span><span class="tag">C</span><span class="tag">SQL</span><span class="tag">HTML</span><span class="tag">CSS</span></div></div>
+      <div class="card"><h3>// backend &amp; frontend</h3><div class="tags"><span class="tag">NestJS</span><span class="tag">Node.js</span><span class="tag">Express.js</span><span class="tag">FastAPI</span><span class="tag">React Native</span><span class="tag">Expo</span><span class="tag">React.js</span><span class="tag">Next.js</span><span class="tag">Tailwind CSS</span></div></div>
+      <div class="card"><h3>// ai &amp; llm</h3><div class="tags"><span class="tag">LangGraph</span><span class="tag">LangChain</span><span class="tag">RAG</span><span class="tag">Prompt Engineering</span><span class="tag">Vector Embeddings</span><span class="tag">Multiagent Systems</span><span class="tag">Ollama</span></div></div>
+      <div class="card"><h3>// data</h3><div class="tags"><span class="tag">PostgreSQL</span><span class="tag">Prisma</span><span class="tag">Supabase</span><span class="tag">MongoDB</span><span class="tag">SQLite</span><span class="tag">Firebase</span></div></div>
+      <div class="card"><h3>// cloud &amp; devops</h3><div class="tags"><span class="tag">Google Cloud</span><span class="tag">Cloud Run</span><span class="tag">Terraform</span><span class="tag">Docker</span><span class="tag">GitHub Actions</span><span class="tag">Sentry</span><span class="tag">PostHog</span></div></div>
+      <div class="card"><h3>// practices</h3><div class="tags"><span class="tag">REST API design</span><span class="tag">Automated testing</span><span class="tag">Row-level security</span><span class="tag">Feature flags</span><span class="tag">ADRs</span><span class="tag">DSA</span><span class="tag">OOP</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="awards">
+  <div class="wrap">
+    <span class="label">05 / achievements</span>
+    <h2>Off the <em>keyboard.</em></h2>
+    <div class="ach">
+      <div><b>Finalist</b><span>GeeksforGeeks Hackathon</span></div>
+      <div><b>4th of 150</b><span>College business pitch competition, Salary Sync</span></div>
+      <div><b>Silver medal</b><span>District Lawn Tennis Tournament, Ghaziabad</span></div>
+      <div><b>Lead guitarist</b><span>School band, inter-school events and fests</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div class="wrap">
+    <span class="label">06 / contact</span>
+    <h2>Let&rsquo;s build <em>something.</em></h2>
+    <p class="lede">Open to software engineering internships in backend, full-stack and AI. The fastest way to reach me is email.</p>
+    <div class="contact-row">
+      <button class="btn primary" id="copy" type="button">Copy email</button>
+      <a class="btn" href="mailto:mishrakanishk02@gmail.com">Send an email</a>
+      <span id="copied" aria-live="polite"></span>
+    </div>
+    <div class="contact-list">
+      <div>email &nbsp;&nbsp;&nbsp;<a href="mailto:mishrakanishk02@gmail.com">mishrakanishk02@gmail.com</a></div>
+      <div>phone &nbsp;&nbsp;&nbsp;<a href="tel:+916239221780">+91 62392 21780</a></div>
+      <div>github &nbsp;&nbsp;<a href="https://github.com/Coderrr-beep" target="_blank" rel="noopener">github.com/Coderrr-beep</a></div>
+      <div>linkedin <a href="https://www.linkedin.com/in/kanishk-mishra-7008b1371" target="_blank" rel="noopener">linkedin.com/in/kanishk-mishra-7008b1371</a></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap"><span>&copy; 2026 Kanishk Mishra</span><span>Built with HTML, CSS and a canvas</span></div></footer>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Agent graph canvas: nodes drift, edges connect nearby nodes, amber packets travel along edges */
+  const cv = document.getElementById('graph'), ctx = cv.getContext('2d');
+  let W, H, nodes = [], packets = [];
+  function size() {
+    const r = cv.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
+    W = r.width; H = r.height; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0);
+    const n = Math.round(Math.min(70, W * H / 14000));
+    nodes = Array.from({length: n}, () => ({x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .25, vy: (Math.random() - .5) * .25, r: Math.random() * 1.6 + 1}));
+  }
+  const LINK = 150;
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of nodes) { p.x += p.vx; p.y += p.vy; if (p.x < 0 || p.x > W) p.vx *= -1; if (p.y < 0 || p.y > H) p.vy *= -1; }
+    for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d < LINK) {
+        ctx.strokeStyle = `rgba(95,179,255,${(1 - d / LINK) * .22})`; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        if (!reduce && Math.random() < .0009) packets.push({a, b, t: 0});
+      }
+    }
+    for (const p of nodes) { ctx.fillStyle = 'rgba(200,215,240,.7)'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.fill(); }
+    packets = packets.filter(k => k.t <= 1);
+    for (const k of packets) {
+      k.t += .012; const x = k.a.x + (k.b.x - k.a.x) * k.t, y = k.a.y + (k.b.y - k.a.y) * k.t;
+      ctx.fillStyle = '#fca311'; ctx.shadowColor = '#fca311'; ctx.shadowBlur = 12;
+      ctx.beginPath(); ctx.arc(x, y, 2.4, 0, 7); ctx.fill(); ctx.shadowBlur = 0;
+    }
+    if (!reduce) requestAnimationFrame(frame);
+  }
+  size(); frame(); addEventListener('resize', () => { size(); if (reduce) frame(); });
+
+  /* Rotating role line */
+  const roles = ['Backend engineer', 'AI agent builder', 'Cloud and DevOps tinkerer', 'Mobile app developer'];
+  const roleEl = document.getElementById('role');
+  if (!reduce) {
+    let ri = 0;
+    const type = async (txt) => { for (let i = roleEl.textContent.length; i >= 0; i--) { roleEl.textContent = roleEl.textContent.slice(0, i); await wait(28); } for (let i = 1; i <= txt.length; i++) { roleEl.textContent = txt.slice(0, i); await wait(55); } };
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+    (async () => { await wait(2600); while (true) { ri = (ri + 1) % roles.length; await type(roles[ri]); await wait(2200); } })();
+  }
+
+  /* Terminal boot sequence */
+  const lines = [
+    ['<span class="p">$</span> whoami', 0],
+    ['kanishk &middot; software engineer &middot; delhi', 1],
+    ['<span class="p">$</span> pnpm test', 0],
+    ['<span class="ok">&#10003;</span> api      424 passed', 1],
+    ['<span class="ok">&#10003;</span> mobile   163 passed', 1],
+    ['<span class="p">$</span> curl -X POST /v1/doses/confirm', 0],
+    ['<span class="b">201</span> created <span class="dim">&middot; retry &rarr;</span> <span class="b">200</span> <span class="dim">no dupes</span>', 1],
+    ['<span class="p">$</span> agent run vuln-scanner', 0],
+    ['semgrep + bandit + qwen2.5-coder', 1],
+    ['<span class="ok">&#10003;</span> false-positive rate 0.374 &rarr; <span class="p">0.152</span>', 1],
+    ['<span class="p">$</span> <span class="cursorT">&#9608;</span>', 0]
+  ];
+  const term = document.getElementById('term');
+  if (reduce) { term.innerHTML = lines.map(l => l[0]).join('\n'); }
+  else {
+    let i = 0;
+    const next = () => {
+      if (i >= lines.length) return;
+      const [html, instant] = lines[i++];
+      if (instant) { term.innerHTML += (term.innerHTML ? '\n' : '') + html; setTimeout(next, 260); return; }
+      // type the command text, keep markup intact by revealing a temp element
+      const tmp = document.createElement('div'); tmp.innerHTML = html; const plain = tmp.textContent;
+      const prefix = term.innerHTML + (term.innerHTML ? '\n' : '');
+      let k = 0;
+      const step = () => {
+        k++; term.innerHTML = prefix + '<span class="p">$</span>' + plain.slice(1, k).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+        if (k < plain.length) setTimeout(step, 22); else { term.innerHTML = prefix + html; setTimeout(next, 320); }
+      };
+      step();
+    };
+    setTimeout(next, 500);
+  }
+
+  /* Spotlight follows cursor on project cards */
+  document.querySelectorAll('.proj').forEach(c => c.addEventListener('pointermove', e => {
+    const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }));
+
+  /* Copy email */
+  const btn = document.getElementById('copy'), out = document.getElementById('copied');
+  btn.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText('mishrakanishk02@gmail.com'); out.textContent = 'Copied!'; }
+    catch { out.textContent = 'mishrakanishk02@gmail.com'; }
+    setTimeout(() => { out.textContent = ''; }, 2500);
+  });
+})();
+</script>
+</body>
+</html>
